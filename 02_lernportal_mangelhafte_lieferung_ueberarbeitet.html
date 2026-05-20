@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lernportal – Mangelhafte Lieferung</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap');
+
+:root {
+  --basis:#1a9e5c; --basis-dark:#117a45; --basis-light:#e8f9f1; --basis-mid:#b8ecd4;
+  --std:#e07b00; --std-dark:#b56200; --std-light:#fff4e0; --std-mid:#ffd8a0;
+  --erw:#1a3a8f; --erw-dark:#0f2060; --erw-light:#eaf0ff; --erw-mid:#b8ccff;
+  --loes:#4a1a8f; --loes-dark:#2e0a6e; --loes-light:#f3eeff; --loes-mid:#c8aaf5;
+  --hilfe:#0e6e6e; --hilfe-dark:#074848; --hilfe-light:#e8f9f9; --hilfe-mid:#a0dede;
+  --text:#1a1a2e; --gray:#6b7280; --bg:#f5f7ff;
+  --accent:#4f7fff; --red:#cc0000; --green:#1a9e5c;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* ── PAGES ── */
+.page { display:none; }
+.page.active { display:block; }
+
+/* ── HEADER ── */
+.hdr { color:white; padding:2rem 1.5rem 1.8rem; text-align:center; }
+.hdr-start { background:linear-gradient(135deg,#1a3a8f,#0f2060); }
+.hdr-basis { background:linear-gradient(135deg,var(--basis),var(--basis-dark)); }
+.hdr-std   { background:linear-gradient(135deg,var(--std),var(--std-dark)); }
+.hdr-erw   { background:linear-gradient(135deg,var(--erw),var(--erw-dark)); }
+.hdr-loes  { background:linear-gradient(135deg,var(--loes),var(--loes-dark)); }
+.hdr-hilfe { background:linear-gradient(135deg,var(--hilfe),var(--hilfe-dark)); }
+
+.sticky-nav {
+  position:sticky; top:0; z-index:999;
+  background:rgba(10,20,60,0.97); backdrop-filter:blur(8px);
+  padding:.55rem 1.2rem; display:flex; align-items:center; gap:.8rem;
+}
+.sticky-nav button {
+  background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.4);
+  color:white; border-radius:30px; padding:.35rem 1rem;
+  font-size:.85rem; font-weight:700; cursor:pointer;
+  font-family:'Outfit',sans-serif; transition:background .15s;
+  display:flex; align-items:center; gap:.4rem;
+}
+.sticky-nav button:hover { background:rgba(255,255,255,.3); }
+.sticky-nav .nav-label { color:rgba(255,255,255,.75); font-size:.8rem; }
+
+.badge {
+  display:inline-block; background:rgba(255,255,255,.22);
+  border-radius:20px; padding:.25rem .9rem; font-size:.78rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:.1em; margin-bottom:.7rem;
+}
+.hdr h1 { font-size:clamp(1.4rem,4.5vw,2rem); font-weight:900; margin-bottom:.5rem; line-height:1.2; }
+.hdr p  { font-size:.95rem; opacity:.88; font-weight:300; }
+
+/* ── CONTAINER ── */
+.wrap { max-width:760px; margin:0 auto; padding:1.8rem 1.2rem 3rem; }
+
+/* ── HINWEIS BOX ── */
+.hinweis {
+  background:white; border-left:4px solid var(--erw); border-radius:10px;
+  padding:1.1rem 1.3rem; margin-bottom:2rem; display:flex; gap:.8rem; align-items:flex-start;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.hinweis .ico { font-size:1.4rem; flex-shrink:0; margin-top:.1rem; }
+.hinweis p { font-size:.95rem; line-height:1.6; color:#374151; }
+
+/* ── NAVIGATION CARDS ── */
+.sec-title {
+  font-size:.9rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--gray); margin-bottom:1rem;
+}
+.cards { display:flex; flex-direction:column; gap:1rem; margin-bottom:2.5rem; }
+.card-nav {
+  background:white; border-radius:14px; padding:1.5rem;
+  box-shadow:0 3px 15px rgba(0,0,0,.07); display:flex; align-items:center;
+  gap:1.2rem; cursor:pointer; border:2px solid transparent; transition:transform .18s,box-shadow .18s;
+}
+.card-nav:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.12); }
+.card-nav .cico {
+  width:56px; height:56px; border-radius:12px; display:flex;
+  align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0;
+}
+.card-nav.basis-c { border-color:var(--basis); }
+.card-nav.basis-c .cico { background:var(--basis-light); }
+.card-nav.basis-c .clabel { color:var(--basis); }
+.card-nav.std-c { border-color:var(--std); }
+.card-nav.std-c .cico { background:var(--std-light); }
+.card-nav.std-c .clabel { color:var(--std); }
+.card-nav.erw-c { border-color:var(--erw); }
+.card-nav.erw-c .cico { background:var(--erw-light); }
+.card-nav.erw-c .clabel { color:var(--erw); }
+.ctxt { flex:1; }
+.clabel { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:.25rem; }
+.ctitle { font-size:1.1rem; font-weight:700; margin-bottom:.3rem; }
+.cdesc { font-size:.87rem; color:var(--gray); line-height:1.45; }
+.carrow { font-size:1.3rem; color:#d1d5db; flex-shrink:0; }
+
+.extras { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+.extra-btn {
+  background:white; border-radius:10px; padding:1rem; cursor:pointer;
+  text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.06);
+  border:1.5px solid #e5e7eb; transition:border-color .18s,box-shadow .18s;
+}
+.extra-btn:hover { border-color:#9ca3af; box-shadow:0 4px 14px rgba(0,0,0,.1); }
+.extra-btn .eico { font-size:1.5rem; display:block; margin-bottom:.4rem; }
+.extra-btn span { font-size:.87rem; font-weight:600; }
+
+/* ── CONTENT BLOCKS ── */
+.block {
+  background:white; border-radius:14px; padding:1.4rem 1.5rem;
+  margin-bottom:1.2rem; box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+.block-t { font-size:1rem; font-weight:700; margin-bottom:.9rem; display:flex; align-items:center; gap:.5rem; }
+.block p { font-size:.97rem; line-height:1.65; color:#374151; margin-bottom:.6rem; }
+.block p:last-child { margin-bottom:0; }
+
+.block.basis-b  { border-top:4px solid var(--basis); }
+.block-t.basis-t{ color:var(--basis-dark); }
+.block.std-b    { border-top:4px solid var(--std); }
+.block-t.std-t  { color:var(--std-dark); }
+.block.erw-b    { border-top:4px solid var(--erw); }
+.block-t.erw-t  { color:var(--erw); }
+.block.loes-b   { border-top:4px solid var(--loes); }
+.block-t.loes-t { color:var(--loes-dark); }
+.block.hilfe-b  { border-top:4px solid var(--hilfe); }
+.block-t.hilfe-t{ color:var(--hilfe-dark); }
+
+/* ── LIST ── */
+.lst { list-style:none; padding:0; }
+.lst li {
+  padding:.55rem 0; border-bottom:1px solid #f3f4f6;
+  font-size:.95rem; line-height:1.55; display:flex; align-items:flex-start; gap:.6rem;
+}
+.lst li:last-child { border-bottom:none; }
+.lst.basis-l li::before  { content:"✓"; color:var(--basis); font-weight:700; flex-shrink:0; margin-top:.05rem; }
+.lst.std-l li::before    { content:"▶"; color:var(--std); font-size:.7rem; flex-shrink:0; margin-top:.3rem; }
+.lst.erw-l li::before    { content:"◆"; color:var(--accent); font-size:.6rem; flex-shrink:0; margin-top:.35rem; }
+.lst.hilfe-l li::before  { content:"→"; color:var(--hilfe); font-weight:700; flex-shrink:0; margin-top:.05rem; }
+
+/* ── EXAMPLE / DEFINITION ── */
+.bsp {
+  border-radius:10px; padding:1rem 1.1rem; margin-top:.8rem;
+}
+.bsp-l { font-size:.73rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:.4rem; }
+.bsp p { font-size:.92rem; line-height:1.6; margin-bottom:.35rem; }
+.bsp-basis { background:var(--basis-light); }
+.bsp-l-basis { color:var(--basis-dark); }
+.bsp-std { background:var(--std-light); border-left:3px solid var(--std); border-radius:0 8px 8px 0; }
+.bsp-l-std { color:var(--std-dark); }
+.bsp-std p { color:#4a3000; }
+
+.def { border-radius:10px; padding:.9rem 1.1rem; margin-bottom:.8rem; }
+.def-term { font-weight:700; font-size:1rem; margin-bottom:.3rem; }
+.def p { font-size:.92rem; line-height:1.55; }
+.def-std { background:var(--std-light); border:1.5px solid var(--std-mid); }
+.def-term-std { color:var(--std-dark); }
+.def-std p { color:#4a3000; }
+.def-erw { background:var(--erw-dark); color:white; }
+.def-term-erw { color:white; }
+.def-erw p { color:rgba(255,255,255,.92); }
+
+/* ── SCHEMA ── */
+.schema { background:white; border:2px solid; border-radius:12px; overflow:hidden; margin-bottom:1.2rem; }
+.schema-hdr { color:white; font-weight:700; font-size:.9rem; padding:.7rem 1.2rem; }
+.schema.std-s  { border-color:var(--std-mid); }
+.schema.std-s .schema-hdr { background:var(--std); }
+.srow { display:flex; align-items:center; padding:.75rem 1.2rem; gap:1rem; border-bottom:1px solid; font-size:.92rem; }
+.srow:last-child { border-bottom:none; }
+.std-s .srow   { border-color:#fff0d9; }
+.snum {
+  width:28px; height:28px; color:white; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; flex-shrink:0;
+}
+.std-s  .snum { background:var(--std); }
+.stxt { flex:1; line-height:1.45; }
+.stxt strong { display:block; }
+.std-s  .stxt strong { color:var(--std-dark); }
+
+/* ── MERKSATZ ── */
+.merk {
+  color:white; border-radius:12px; padding:1.2rem 1.4rem;
+  margin-bottom:1.2rem; text-align:center;
+}
+.merk-l { font-size:.73rem; text-transform:uppercase; letter-spacing:.1em; opacity:.8; margin-bottom:.5rem; }
+.merk p { font-size:1rem; font-weight:700; line-height:1.5; }
+.merk-basis { background:var(--basis); }
+.merk-std   { background:linear-gradient(135deg,var(--std),var(--std-dark)); }
+.merk-erw   { background:linear-gradient(135deg,var(--erw),var(--erw-dark)); }
+.merk-hilfe { background:linear-gradient(135deg,var(--hilfe),var(--hilfe-dark)); }
+
+/* ── QUIZ / CHECKS ── */
+.quiz {
+  background:white; border-radius:14px; padding:1.35rem 1.5rem;
+  margin-bottom:1.2rem; box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+.quiz.basis-q { border:2px solid var(--basis-mid); }
+.quiz.std-q { border:2px solid var(--std-mid); }
+.quiz.loes-q { border:2px solid var(--loes-mid); }
+.quiz.hilfe-q { border:2px solid var(--hilfe-mid); }
+.quiz-title { font-size:1rem; font-weight:800; margin-bottom:.35rem; }
+.basis-q .quiz-title { color:var(--basis-dark); }
+.std-q .quiz-title { color:var(--std-dark); }
+.loes-q .quiz-title { color:var(--loes-dark); }
+.hilfe-q .quiz-title { color:var(--hilfe-dark); }
+.quiz-intro { font-size:.92rem; color:#4b5563; line-height:1.55; margin-bottom:1rem; }
+
+.q-card {
+  background:#fafafa; border:1.5px solid #e5e7eb; border-radius:10px;
+  padding:.95rem 1rem; margin-bottom:.85rem;
+}
+.q-text { font-size:.94rem; font-weight:700; line-height:1.45; margin-bottom:.65rem; color:#1f2937; }
+.answers { display:grid; gap:.45rem; }
+.answer-btn {
+  width:100%; text-align:left; border:1.5px solid #d1d5db; background:white;
+  border-radius:8px; padding:.6rem .75rem; font-family:'Outfit',sans-serif;
+  font-size:.9rem; line-height:1.35; cursor:pointer; transition:.15s;
+}
+.answer-btn:hover { border-color:#9ca3af; background:#f9fafb; }
+.answer-btn.correct { background:#e8f9f1; border-color:var(--green); color:#064e2b; font-weight:700; }
+.answer-btn.wrong { background:#fff0f0; border-color:#e05555; color:#7f1d1d; font-weight:700; }
+.answer-btn:disabled { cursor:default; opacity:1; }
+.feedback {
+  display:none; margin-top:.65rem; padding:.65rem .75rem; border-radius:8px;
+  font-size:.88rem; line-height:1.45;
+}
+.feedback.okay { display:block; background:#e8f9f1; color:#064e2b; border-left:4px solid var(--green); }
+.feedback.nope { display:block; background:#fff0f0; color:#7f1d1d; border-left:4px solid #e05555; }
+.check-actions { display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-top:1rem; }
+.action-btn {
+  border:none; border-radius:30px; padding:.65rem 1.05rem; font-weight:800; cursor:pointer;
+  font-family:'Outfit',sans-serif; font-size:.9rem; transition:.15s;
+}
+.action-btn:hover { transform:translateY(-1px); filter:brightness(.98); }
+.btn-basis { background:var(--basis); color:white; }
+.btn-std { background:var(--std); color:white; }
+.btn-erw { background:var(--erw); color:white; }
+.btn-hilfe { background:var(--hilfe); color:white; }
+.btn-loes { background:var(--loes); color:white; }
+.btn-soft { background:#eef2ff; color:#1a3a8f; border:1px solid #c7d2fe; }
+
+.result-box {
+  display:none; margin-top:1rem; border-radius:12px; padding:1rem 1.1rem;
+  font-size:.94rem; line-height:1.55;
+}
+.result-box.show { display:block; }
+.result-box.pass { background:#e8f9f1; border:2px solid var(--green); color:#064e2b; }
+.result-box.fail { background:#fff4e0; border:2px solid var(--std); color:#5c3a00; }
+.game-card {
+  display:none; margin-top:1rem; text-align:center; border-radius:16px;
+  padding:1.2rem; background:linear-gradient(135deg,#fffbe7,#e8f9f1);
+  border:2px dashed var(--basis); box-shadow:0 5px 18px rgba(26,158,92,.12);
+}
+.game-card.show { display:block; animation:pop .35s ease; }
+.game-icon { font-size:2.4rem; margin-bottom:.3rem; }
+.game-title { font-weight:900; font-size:1.1rem; color:#064e2b; }
+.game-text { font-size:.9rem; color:#36513f; margin-top:.35rem; line-height:1.5; }
+@keyframes pop { from{ transform:scale(.92); opacity:0; } to{ transform:scale(1); opacity:1; } }
+
+/* ── EXPERT TRANSFER ── */
+.transfer {
+  background:var(--erw-light); border:2px solid var(--erw-mid);
+  border-radius:12px; padding:1.3rem 1.5rem; margin-bottom:1.2rem;
+}
+.transfer-t { font-size:.95rem; font-weight:800; color:var(--erw); margin-bottom:.4rem; }
+.transfer-note { font-size:.9rem; color:#374151; line-height:1.55; margin-bottom:1rem; }
+.transfer-fall {
+  background:white; border-radius:10px; padding:1rem 1.1rem;
+  margin-bottom:.9rem; font-size:.92rem; line-height:1.65; border:1px solid var(--erw-mid);
+}
+.transfer-fall strong { color:var(--erw-dark); }
+.case-meta {
+  display:inline-block; background:var(--erw); color:white; border-radius:999px;
+  padding:.2rem .65rem; font-size:.75rem; font-weight:800; margin-bottom:.6rem;
+}
+details.solution {
+  background:white; border:1.5px solid var(--erw-mid); border-radius:9px;
+  padding:.75rem .9rem; margin:.65rem 0; font-size:.91rem; line-height:1.55;
+}
+details.solution summary {
+  cursor:pointer; font-weight:800; color:var(--erw-dark);
+}
+details.solution p { margin-top:.55rem; color:#374151; }
+
+/* ── FOLGEN GRID / WARN / TIMELINE ── */
+.folgen { display:flex; flex-direction:column; gap:.7rem; margin-bottom:1.2rem; }
+.fc {
+  background:white; border-radius:10px; padding:1rem 1.2rem;
+  border-left:4px solid var(--accent); box-shadow:0 2px 8px rgba(26,58,143,.07);
+  display:flex; gap:.8rem; align-items:flex-start;
+}
+.fc-ico { font-size:1.4rem; flex-shrink:0; }
+.fc-txt { font-size:.92rem; line-height:1.55; }
+.fc-txt strong { color:var(--erw); display:block; margin-bottom:.2rem; font-size:.95rem; }
+
+.warn { background:#fff0f0; border:2px solid #ffb3b3; border-radius:12px; padding:1.2rem 1.4rem; margin-bottom:1.2rem; }
+.warn-t { font-weight:700; color:#c00000; margin-bottom:.7rem; font-size:.95rem; }
+.warn p { font-size:.92rem; line-height:1.6; color:#4a0000; margin-bottom:.4rem; }
+
+.tl { margin-bottom:1.2rem; }
+.tl-i { display:flex; gap:.9rem; margin-bottom:0; position:relative; }
+.tl-i::before {
+  content:""; position:absolute; left:14px; top:38px; width:2px;
+  height:calc(100% - 8px); background:var(--erw-mid);
+}
+.tl-i:last-child::before { display:none; }
+.tl-dot {
+  width:30px; height:30px; border-radius:50%; background:var(--erw); color:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.8rem; font-weight:700; flex-shrink:0; z-index:1; margin-top:.4rem;
+}
+.tl-c {
+  background:white; border-radius:10px; padding:.9rem 1.1rem; flex:1;
+  margin-bottom:.7rem; box-shadow:0 1px 6px rgba(26,58,143,.07); font-size:.92rem; line-height:1.55;
+}
+.tl-c strong { color:var(--erw-dark); display:block; margin-bottom:.2rem; }
+
+/* ── LÖSUNG TABELLE ── */
+.ltbl { width:100%; border-collapse:collapse; margin-bottom:.8rem; font-size:.88rem; }
+.ltbl th { background:var(--loes); color:white; text-align:left; padding:.55rem .8rem; font-weight:600; }
+.ltbl td { padding:.55rem .8rem; border-bottom:1px solid var(--loes-light); vertical-align:top; line-height:1.45; }
+.ltbl tr:nth-child(even) td { background:var(--loes-light); }
+.ok { color:#1a9e5c; font-weight:700; }
+.bad { color:#cc0000; font-weight:700; }
+
+.richtig {
+  background:#e8f9f1; border-left:3px solid #1a9e5c;
+  border-radius:0 8px 8px 0; padding:.8rem 1rem; margin-top:.7rem;
+  font-size:.92rem; line-height:1.6; color:#0a3a1a;
+}
+.muster-ruege {
+  background:#f8f8f8; border:1.5px solid #ddd; border-radius:10px;
+  padding:1.2rem 1.4rem; font-family:'Courier New',monospace; font-size:.83rem;
+  line-height:1.8; margin-top:.8rem; color:#222; white-space:pre-wrap;
+}
+
+/* ── GLOSSAR / PILLS ── */
+.pill {
+  display:inline-block; border-radius:20px; padding:.2rem .7rem;
+  font-size:.82rem; font-weight:600; margin:.15rem;
+}
+.pill-basis { background:var(--basis-light); color:var(--basis-dark); }
+.pill-std   { background:var(--std-light);   color:var(--std-dark); }
+.pill-erw   { background:var(--erw-light);   color:var(--erw); }
+.pill-loes  { background:var(--loes-light);  color:var(--loes-dark); }
+.pill-hilfe { background:var(--hilfe-light); color:var(--hilfe-dark); }
+
+/* ── HILFE ── */
+.schritt { display:flex; gap:1rem; margin-bottom:1rem; align-items:flex-start; }
+.s-num {
+  width:36px; height:36px; border-radius:50%; background:var(--hilfe); color:white;
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.95rem; flex-shrink:0;
+}
+.s-c { flex:1; background:var(--hilfe-light); border-radius:10px; padding:.9rem 1.1rem; }
+.s-t { font-weight:700; color:var(--hilfe-dark); font-size:.95rem; margin-bottom:.4rem; }
+.s-x { font-size:.9rem; line-height:1.6; color:#2a4848; }
+
+.formu {
+  background:#f0f8ff; border-left:3px solid var(--hilfe); border-radius:0 8px 8px 0;
+  padding:.8rem 1rem; margin-bottom:.7rem; font-size:.88rem;
+  font-style:italic; color:#1a3a4a; line-height:1.6;
+}
+.formu strong { font-style:normal; display:block; margin-bottom:.3rem; color:var(--hilfe-dark); font-size:.8rem; text-transform:uppercase; }
+
+.locked-section { display:none; }
+.locked-section.show { display:block; animation:pop .3s ease; }
+
+.select-card {
+  background:white; border:1.5px solid #d1d5db; border-radius:10px;
+  padding:.8rem .9rem; margin-bottom:.65rem; cursor:pointer; transition:.15s;
+  font-size:.9rem; line-height:1.5;
+}
+.select-card:hover { border-color:var(--hilfe); background:#f8ffff; }
+.select-card.selected { border-color:var(--hilfe); background:var(--hilfe-light); box-shadow:inset 0 0 0 1px var(--hilfe); }
+.select-card.correct { border-color:var(--green); background:#e8f9f1; color:#064e2b; }
+.select-card.wrong { border-color:#e05555; background:#fff0f0; color:#7f1d1d; }
+
+.back-btn-inline {
+  display:inline-flex; align-items:center; gap:.3rem;
+  background:var(--hilfe-light); color:var(--hilfe-dark);
+  border:1.5px solid var(--hilfe-mid); border-radius:20px;
+  padding:.2rem .7rem; font-size:.82rem; font-weight:600;
+  cursor:pointer; font-family:'Outfit',sans-serif; margin:0 2px;
+  transition:background .15s;
+}
+.back-btn-inline:hover { background:var(--hilfe-mid); }
+
+/* Lösung */
+.lh { background:#fff8e0; border-left:4px solid #e0a000; border-radius:10px; padding:1rem 1.2rem; margin-bottom:1.5rem; font-size:.9rem; line-height:1.55; color:#3a2800; }
+.lh strong { color:#a06000; }
+.ah { background:var(--loes); color:white; border-radius:10px 10px 0 0; padding:.7rem 1.2rem; font-weight:700; font-size:.92rem; }
+.lb { background:white; border-radius:0 0 12px 12px; border:2px solid var(--loes-mid); border-top:none; padding:1.2rem 1.4rem; margin-bottom:1.5rem; }
+.lb p { font-size:.95rem; line-height:1.65; color:#374151; margin-bottom:.7rem; }
+.lb ul,.lb ol { padding-left:1.4rem; margin:.5rem 0; }
+.lb li { font-size:.93rem; line-height:1.6; margin-bottom:.3rem; }
+
+/* kleine Konfetti-Animation */
+.confetti {
+  pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:3000;
+}
+.confetti span {
+  position:absolute; top:-20px; font-size:1.2rem;
+  animation:fall 1.45s linear forwards;
+}
+@keyframes fall {
+  to { transform:translateY(110vh) rotate(500deg); opacity:0; }
+}
+
+footer { text-align:center; padding:1.5rem; font-size:.78rem; color:#9ca3af; border-top:1px solid #e5e7eb; }
+@media (max-width:560px) {
+  .extras { grid-template-columns:1fr; }
+  .card-nav { align-items:flex-start; padding:1.1rem; }
+  .card-nav .cico { width:48px; height:48px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════ START ════════════════════════════════ -->
+<div id="p-start" class="page active">
+  <div class="hdr hdr-start">
+    <div class="badge">📦 Ökonomische Bildung · Klasse 10</div>
+    <h1>Mangelhafte Lieferung erkennen und richtig handeln</h1>
+    <p>Dein digitales Lernportal – Hilfen, Erklärungen, Checks und freischaltbare Musterlösung</p>
+  </div>
+  <div class="wrap">
+    <div class="hinweis">
+      <div class="ico">💡</div>
+      <p><strong>Wichtiger Hinweis:</strong> Bearbeite zuerst dein Arbeitsblatt auf Papier. Nutze diese digitale Hilfe, wenn du nicht weiterkommst oder dich selbst kontrollieren möchtest. Die Musterlösung wird erst durch ein Wissensquiz freigeschaltet.</p>
+    </div>
+    <p class="sec-title">Wähle dein Niveau</p>
+    <div class="cards">
+      <div class="card-nav basis-c" onclick="show('p-basis')">
+        <div class="cico">🟢</div>
+        <div class="ctxt">
+          <div class="clabel">Basis · Niveau R</div>
+          <div class="ctitle">Einstieg – einfache Erklärungen</div>
+          <div class="cdesc">Kurze Stichpunkte, einfache Beispiele und ein 5-Fragen-Check.</div>
+        </div>
+        <div class="carrow">›</div>
+      </div>
+      <div class="card-nav std-c" onclick="show('p-std')">
+        <div class="cico">🟠</div>
+        <div class="ctxt">
+          <div class="clabel">Standard · Niveau R+</div>
+          <div class="ctitle">Aufbau – Begriffe und Anwendung</div>
+          <div class="cdesc">Fachbegriffe, Prüfschema und ein 4-von-4-Kompetenzcheck.</div>
+        </div>
+        <div class="carrow">›</div>
+      </div>
+      <div class="card-nav erw-c" onclick="show('p-erw')">
+        <div class="cico">🔵</div>
+        <div class="ctxt">
+          <div class="clabel">Experte · Niveau E</div>
+          <div class="ctitle">Vertiefung – Recht und Transfer</div>
+          <div class="cdesc">Rechtliche Folgen, zufällige Transferfälle und Lösungen zum Aufklappen.</div>
+        </div>
+        <div class="carrow">›</div>
+      </div>
+    </div>
+    <p class="sec-title">Weitere Hilfen</p>
+    <div class="extras">
+      <div class="extra-btn" onclick="show('p-hilfe')">
+        <span class="eico">🗺️</span>
+        <span>Schritt-für-Schritt-Hilfe</span>
+      </div>
+      <div class="extra-btn" onclick="show('p-loes')">
+        <span class="eico">🔐</span>
+        <span>Musterlösung freischalten</span>
+      </div>
+    </div>
+  </div>
+  <footer>Lernportal ÖBDB 10 · LB 3 „Im unternehmerischen Kontext einkaufen" · § 434 BGB · § 377 HGB</footer>
+</div>
+
+<!-- ════════════════════════════════ BASIS ════════════════════════════════ -->
+<div id="p-basis" class="page">
+<div class="sticky-nav"><button onclick="show('p-start')">← Startseite</button><span class="nav-label">🟢 Basis</span></div>
+  <div class="hdr hdr-basis">
+    <div class="badge">🟢 Basis · Niveau R</div>
+    <h1>Mangelhafte Lieferung – einfach erklärt</h1>
+    <p>Schritt für Schritt mit kurzen Erklärungen und Beispielen</p>
+  </div>
+  <div class="wrap">
+    <div class="block basis-b">
+      <div class="block-t basis-t">📦 Was passiert beim Wareneingang?</div>
+      <p>Wenn eine Firma etwas bestellt, kommt die Ware irgendwann an. Das nennt man <strong>Wareneingang</strong>.</p>
+      <p>Der Mitarbeiter muss dann überprüfen, ob die Lieferung <strong>stimmt</strong>.</p>
+      <ul class="lst basis-l">
+        <li>Ist die richtige Ware da?</li>
+        <li>Stimmt die Menge?</li>
+        <li>Ist die Ware in Ordnung – also nicht kaputt?</li>
+      </ul>
+      <div class="bsp bsp-basis">
+        <div class="bsp-l bsp-l-basis">📌 Beispiel</div>
+        <p>Die Firma Schulz bestellt <strong>50 schwarze Bürostühle</strong>. Es kommen aber 50 <strong>graue</strong> Bürostühle. Das stimmt nicht mit der Bestellung überein.</p>
+      </div>
+    </div>
+
+    <div class="block basis-b">
+      <div class="block-t basis-t">🔍 Was ist ein Sachmangel?</div>
+      <p>Ein <strong>Sachmangel</strong> liegt vor, wenn die gelieferte Ware <strong>nicht so ist, wie sie sein sollte</strong>.</p>
+      <ul class="lst basis-l">
+        <li>Falsche Farbe, Größe oder Sorte</li>
+        <li>Zu wenig Stücke</li>
+        <li>Ware ist kaputt oder beschädigt</li>
+        <li>Ware funktioniert nicht richtig</li>
+      </ul>
+    </div>
+
+    <div class="block basis-b">
+      <div class="block-t basis-t">📄 Welche Belege gibt es?</div>
+      <p>Bei einer Lieferung gibt es wichtige Dokumente. Du musst diese <strong>vergleichen</strong>:</p>
+      <ul class="lst basis-l">
+        <li><strong>Bestellung</strong> – was wurde bestellt?</li>
+        <li><strong>Auftragsbestätigung</strong> – was hat der Lieferant bestätigt?</li>
+        <li><strong>Lieferschein</strong> – was wurde tatsächlich geliefert?</li>
+        <li><strong>Wareneingangsprotokoll</strong> – was wurde beim Empfang festgestellt?</li>
+      </ul>
+      <div class="bsp bsp-basis">
+        <div class="bsp-l bsp-l-basis">📌 So geht's</div>
+        <p>Vergleiche immer: <strong>Bestellung ↔ Auftragsbestätigung ↔ Lieferschein</strong>. Wenn etwas nicht stimmt, liegt ein Mangel vor.</p>
+      </div>
+    </div>
+
+    <div class="block basis-b">
+      <div class="block-t basis-t">⚡ Was muss die Firma tun?</div>
+      <ul class="lst basis-l">
+        <li><strong>Prüfen</strong> – Die Ware sofort nach Anlieferung kontrollieren</li>
+        <li><strong>Schreiben</strong> – Den Mangel sofort beim Lieferanten melden, also rügen</li>
+        <li><strong>Dokumentieren</strong> – Alles aufschreiben: Datum, Fehler, Belege</li>
+      </ul>
+      <div class="bsp bsp-basis">
+        <div class="bsp-l bsp-l-basis">⚠️ Wichtig!</div>
+        <p>Wer zu <strong>lange wartet</strong>, verliert im Handelskauf seine Rechte.</p>
+      </div>
+    </div>
+
+    <div class="merk merk-basis">
+      <div class="merk-l">🧠 Merksatz</div>
+      <p>Ware prüfen · Mangel erkennen · sofort melden!<br>Wer wartet, verliert seine Rechte.</p>
+    </div>
+
+    <div class="quiz basis-q" id="basisQuiz">
+      <div class="quiz-title">🎯 Basis-Check – Kannst du das Basisniveau?</div>
+      <div class="quiz-intro">Beantworte 5 Fragen. Du bestehst das Basisniveau mit <strong>mindestens 4 von 5 Punkten</strong>. Nach jeder Antwort bekommst du sofort Feedback.</div>
+
+      <div class="q-card" data-q="basis1">
+        <div class="q-text">1. Was bedeutet Wareneingang?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Die Rechnung wird bezahlt.</button>
+          <button class="answer-btn" data-correct="true">Die bestellte Ware kommt im Unternehmen an und wird kontrolliert.</button>
+          <button class="answer-btn" data-correct="false">Ein Kunde bestellt Ware im Onlineshop.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="basis2">
+        <div class="q-text">2. Wann liegt ein Sachmangel vor?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="true">Wenn die Ware nicht so ist, wie sie vereinbart wurde.</button>
+          <button class="answer-btn" data-correct="false">Wenn die Ware pünktlich geliefert wird.</button>
+          <button class="answer-btn" data-correct="false">Wenn die Ware bezahlt wurde.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="basis3">
+        <div class="q-text">3. Welche Unterlagen sollte man beim Wareneingang vergleichen?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Nur den Kontoauszug.</button>
+          <button class="answer-btn" data-correct="false">Nur das Firmenlogo.</button>
+          <button class="answer-btn" data-correct="true">Bestellung, Auftragsbestätigung, Lieferschein und Wareneingangsprotokoll.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="basis4">
+        <div class="q-text">4. Was ist eine Rüge?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="true">Die Meldung an den Lieferanten, dass mit der Lieferung etwas nicht stimmt.</button>
+          <button class="answer-btn" data-correct="false">Eine Bestellung beim Lieferanten.</button>
+          <button class="answer-btn" data-correct="false">Ein Rabatt auf den Einkaufspreis.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="basis5">
+        <div class="q-text">5. Was sollte eine Firma tun, wenn sie beim Wareneingang einen Mangel entdeckt?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Abwarten, ob der Lieferant sich meldet.</button>
+          <button class="answer-btn" data-correct="true">Den Mangel dokumentieren und unverzüglich melden.</button>
+          <button class="answer-btn" data-correct="false">Die Ware einfach weiterverkaufen.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="check-actions">
+        <button class="action-btn btn-basis" onclick="evaluateQuiz('basis')">Ergebnis anzeigen</button>
+        <button class="action-btn btn-soft" onclick="resetQuiz('basis')">Nochmal versuchen</button>
+      </div>
+      <div class="result-box" id="basisResult"></div>
+      <div class="game-card" id="basisGame">
+        <div class="game-icon">🏅</div>
+        <div class="game-title">Basis-Badge freigeschaltet: Wareneingangs-Detektiv!</div>
+        <div class="game-text">Du kannst Mängel erkennen, Belege vergleichen und weißt, warum schnelles Handeln wichtig ist.</div>
+      </div>
+    </div>
+
+    <div class="block basis-b">
+      <div class="block-t basis-t">📖 Mini-Glossar</div>
+      <p><span class="pill pill-basis">Sachmangel</span> Ware stimmt nicht mit Bestellung überein oder ist fehlerhaft.</p>
+      <p style="margin-top:.6rem"><span class="pill pill-basis">Prüfpflicht</span> Die Pflicht, die Ware beim Empfang zu kontrollieren.</p>
+      <p style="margin-top:.6rem"><span class="pill pill-basis">Rüge</span> Die schriftliche Meldung an den Lieferanten, dass etwas nicht stimmt.</p>
+      <p style="margin-top:.6rem"><span class="pill pill-basis">Lieferschein</span> Dokument, das zeigt, was geliefert wurde.</p>
+    </div>
+  </div>
+  <footer>Basis-Hilfe · § 434 BGB · § 377 HGB</footer>
+</div>
+
+<!-- ════════════════════════════════ STANDARD ════════════════════════════════ -->
+<div id="p-std" class="page">
+<div class="sticky-nav"><button onclick="show('p-start')">← Startseite</button><span class="nav-label">🟠 Standard</span></div>
+  <div class="hdr hdr-std">
+    <div class="badge">🟠 Standard · Niveau R+</div>
+    <h1>Sachmangel, Prüf- und Rügepflicht</h1>
+    <p>Begriffe verstehen und auf den Fall anwenden</p>
+  </div>
+  <div class="wrap">
+
+    <div class="block std-b">
+      <div class="block-t std-t">📦 Wareneingang im Unternehmen</div>
+      <p>Wenn Waren geliefert werden, hat der Käufer im <strong>unternehmerischen Bereich</strong> besondere Pflichten. Der Wareneingang umfasst:</p>
+      <ul class="lst std-l">
+        <li>Entgegennahme der Lieferung</li>
+        <li>Kontrolle der Lieferdokumente: Lieferschein, Bestellung, Auftragsbestätigung</li>
+        <li>Sichtprüfung der Ware auf Menge, Art und Zustand</li>
+        <li>Erstellung eines Wareneingangsprotokolls</li>
+      </ul>
+    </div>
+
+    <div class="def def-std">
+      <div class="def-term def-term-std">§ 434 BGB – Sachmangel</div>
+      <p>Eine Ware hat einen <strong>Sachmangel</strong>, wenn sie nicht der vereinbarten <strong>Beschaffenheit</strong> entspricht: falsche Menge, falsche Qualität, falsches Produkt oder beschädigt.</p>
+    </div>
+
+    <div class="block std-b">
+      <div class="block-t std-t">🔍 Arten von Sachmängeln</div>
+      <ul class="lst std-l">
+        <li><strong>Falschlieferung:</strong> Anderes Produkt als bestellt, z. B. graue statt schwarze Stühle</li>
+        <li><strong>Minderlieferung:</strong> Zu wenige Stücke geliefert</li>
+        <li><strong>Schlechtlieferung:</strong> Ware ist beschädigt, defekt oder minderwertig</li>
+        <li><strong>Zuviellieferung:</strong> Mehr Ware als bestellt</li>
+      </ul>
+      <div class="bsp bsp-std">
+        <div class="bsp-l bsp-l-std">📌 Im Fall Schulz GmbH</div>
+        <p>Bestellt: 50 Bürostühle schwarz, Modell „ErgoPro 500", 80 €/Stück</p>
+        <p>Geliefert: 48 Bürostühle grau, Modell „ErgoPro 400"</p>
+        <p>→ Sachmangel: <strong>Falsche Farbe, falsches Modell, falsche Menge</strong></p>
+      </div>
+    </div>
+
+    <div class="block std-b">
+      <div class="block-t std-t">⚖️ Prüf- und Rügepflicht § 377 HGB</div>
+      <div class="def def-std" style="margin-top:.6rem">
+        <div class="def-term def-term-std">Prüfpflicht</div>
+        <p>Der Käufer muss die Ware nach Erhalt <strong>unverzüglich</strong>, also ohne schuldhaftes Zögern, auf Mängel prüfen.</p>
+      </div>
+      <div class="def def-std">
+        <div class="def-term def-term-std">Rügepflicht</div>
+        <p>Erkannte Mängel müssen dem Verkäufer <strong>sofort und schriftlich gemeldet</strong> werden. Diese Meldung heißt <strong>Mängelrüge</strong>.</p>
+      </div>
+    </div>
+
+    <div class="schema std-s">
+      <div class="schema-hdr">📋 Ablauf bei mangelhafter Lieferung</div>
+      <div class="srow"><div class="snum">1</div><div class="stxt"><strong>Ware empfangen</strong> – Lieferschein annehmen, Ware entladen</div></div>
+      <div class="srow"><div class="snum">2</div><div class="stxt"><strong>Belege vergleichen</strong> – Bestellung ↔ Auftragsbestätigung ↔ Lieferschein</div></div>
+      <div class="srow"><div class="snum">3</div><div class="stxt"><strong>Ware prüfen</strong> – Menge, Art, Qualität, Zustand kontrollieren</div></div>
+      <div class="srow"><div class="snum">4</div><div class="stxt"><strong>Mangel festgestellt?</strong> – Wareneingangsprotokoll ausfüllen</div></div>
+      <div class="srow"><div class="snum">5</div><div class="stxt"><strong>Mängelrüge schreiben</strong> – schriftlich und unverzüglich</div></div>
+      <div class="srow"><div class="snum">6</div><div class="stxt"><strong>Nacherfüllung fordern</strong> – Nachlieferung oder Nachbesserung verlangen</div></div>
+    </div>
+
+    <div class="merk merk-std">
+      <div class="merk-l">§ 377 HGB – Merksatz</div>
+      <p>Prüfen → Rügen → Nacherfüllung fordern.<br>Unverzüglich = so schnell wie möglich!</p>
+    </div>
+
+    <div class="quiz std-q" id="stdQuiz">
+      <div class="quiz-title">🎯 Standard-Check – 4 von 4 Regelung</div>
+      <div class="quiz-intro">Beantworte alle 4 Fragen richtig. Das passt zur Zielkompetenz: Begriffe kennen, rechtlich zuordnen und auf einen Fall anwenden.</div>
+
+      <div class="q-card" data-q="std1">
+        <div class="q-text">1. Was bedeutet „Sachmangel" im Sinne des § 434 BGB?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Der Käufer ist mit der Lieferung unzufrieden, obwohl alles vereinbart geliefert wurde.</button>
+          <button class="answer-btn" data-correct="true">Die Ware entspricht nicht der vereinbarten Beschaffenheit, zum Beispiel falsche Art, Menge oder Qualität.</button>
+          <button class="answer-btn" data-correct="false">Die Ware wurde zu spät bezahlt.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="std2">
+        <div class="q-text">2. Wann muss die Mängelrüge im Handelskauf erfolgen?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="true">Unverzüglich nach Feststellung des Mangels.</button>
+          <button class="answer-btn" data-correct="false">Erst am Ende des Geschäftsjahres.</button>
+          <button class="answer-btn" data-correct="false">Nur, wenn der Lieferant zuerst nachfragt.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="std3">
+        <div class="q-text">3. Die Schulz GmbH bestellt 50 schwarze ErgoPro 500. Geliefert werden 48 graue ErgoPro 400. Welche Mängel liegen vor?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Nur eine verspätete Lieferung.</button>
+          <button class="answer-btn" data-correct="true">Falschlieferung und Minderlieferung.</button>
+          <button class="answer-btn" data-correct="false">Kein Mangel, weil Stühle geliefert wurden.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="std4">
+        <div class="q-text">4. Was kann passieren, wenn ein Kaufmann einen offenen Mangel nicht rechtzeitig rügt?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Der Lieferant muss automatisch Schadensersatz zahlen.</button>
+          <button class="answer-btn" data-correct="false">Der Kaufvertrag wird automatisch ungültig.</button>
+          <button class="answer-btn" data-correct="true">Die Ware gilt als genehmigt und Mängelrechte können verloren gehen.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="check-actions">
+        <button class="action-btn btn-std" onclick="evaluateQuiz('std')">Ergebnis anzeigen</button>
+        <button class="action-btn btn-soft" onclick="resetQuiz('std')">Nochmal versuchen</button>
+      </div>
+      <div class="result-box" id="stdResult"></div>
+      <div class="game-card" id="stdGame">
+        <div class="game-icon">🏆</div>
+        <div class="game-title">Standard-Badge freigeschaltet: Rüge-Profi!</div>
+        <div class="game-text">Du kannst § 434 BGB und § 377 HGB auf einen konkreten Lieferfall anwenden.</div>
+      </div>
+    </div>
+
+    <div class="block std-b">
+      <div class="block-t std-t">📖 Glossar</div>
+      <p><span class="pill pill-std">Sachmangel § 434 BGB</span> Ware entspricht nicht der Vereinbarung</p>
+      <p style="margin-top:.6rem"><span class="pill pill-std">Prüfpflicht § 377 HGB</span> Pflicht zur sofortigen Kontrolle</p>
+      <p style="margin-top:.6rem"><span class="pill pill-std">Rügepflicht § 377 HGB</span> Pflicht zur unverzüglichen Meldung</p>
+      <p style="margin-top:.6rem"><span class="pill pill-std">Mängelrüge</span> Schriftliche Mitteilung des Mangels</p>
+      <p style="margin-top:.6rem"><span class="pill pill-std">Nacherfüllung</span> Anspruch auf Nachlieferung oder Nachbesserung</p>
+    </div>
+  </div>
+  <footer>Standard-Hilfe · § 434 BGB Sachmangel · § 377 HGB Prüf- und Rügepflicht</footer>
+</div>
+
+<!-- ════════════════════════════════ EXPERTE ════════════════════════════════ -->
+<div id="p-erw" class="page">
+<div class="sticky-nav"><button onclick="show('p-start')">← Startseite</button><span class="nav-label">🔵 Experte</span></div>
+  <div class="hdr hdr-erw">
+    <div class="badge">🔵 Experte · Niveau E</div>
+    <h1>Rechtliche Vertiefung: Prüf- und Rügepflicht</h1>
+    <p>Warum schnelles Handeln entscheidend ist – Folgen und Transfer</p>
+  </div>
+  <div class="wrap">
+
+    <div class="def def-erw" style="border-radius:12px; margin-bottom:1.2rem; padding:1.3rem 1.5rem;">
+      <div class="def-term def-term-erw">⚖️ Rechtliche Grundlage</div>
+      <p><strong>§ 434 BGB – Sachmangel:</strong> Eine Sache ist mangelhaft, wenn sie bei Gefahrübergang nicht die vereinbarte Beschaffenheit hat oder sich nicht für die vorausgesetzte Verwendung eignet.</p>
+      <p style="margin-top:.6rem"><strong>§ 377 HGB – Untersuchungs- und Rügepflicht:</strong> Beim Kauf unter Kaufleuten ist der Käufer verpflichtet, die Ware unverzüglich nach Ablieferung zu untersuchen und erkannte Mängel sofort anzuzeigen.</p>
+    </div>
+
+    <div class="block erw-b">
+      <div class="block-t erw-t">⚡ Warum ist schnelles Handeln so wichtig?</div>
+      <p>Im kaufmännischen Bereich gelten strengere Regeln als im Privatbereich. Der Gesetzgeber erwartet von Kaufleuten professionelles und zügiges Handeln.</p>
+      <ul class="lst erw-l">
+        <li>Beweise sichern: Schäden müssen dokumentiert werden, bevor die Ware weiterverarbeitet wird</li>
+        <li>Lieferant schützen: Er soll wissen, was er falsch geliefert hat</li>
+        <li>Rechtssicherheit: Je früher gerügt wird, desto klarer die Rechtslage</li>
+        <li>Schadensminimierung: Verhindert, dass mit mangelhafter Ware weitergearbeitet wird</li>
+      </ul>
+    </div>
+
+    <div class="block erw-b">
+      <div class="block-t erw-t">⚠️ Folgen bei fehlender oder verspäteter Rüge</div>
+    </div>
+    <div class="folgen">
+      <div class="fc"><div class="fc-ico">🚫</div><div class="fc-txt"><strong>Keine Nachlieferung</strong>Der Lieferant muss keine neue, korrekte Ware schicken.</div></div>
+      <div class="fc"><div class="fc-ico">🚫</div><div class="fc-txt"><strong>Keine Nachbesserung</strong>Beschädigte Ware muss nicht repariert werden.</div></div>
+      <div class="fc"><div class="fc-ico">🚫</div><div class="fc-txt"><strong>Kein Preisminderungsrecht</strong>Der volle Kaufpreis muss trotz Mangel bezahlt werden.</div></div>
+      <div class="fc"><div class="fc-ico">🚫</div><div class="fc-txt"><strong>Kein Rücktrittsrecht</strong>Der Kaufvertrag kann nicht mehr rückgängig gemacht werden.</div></div>
+      <div class="fc"><div class="fc-ico">✅</div><div class="fc-txt"><strong>Ware gilt als genehmigt</strong>Durch Schweigen gilt die mangelhafte Ware nach § 377 HGB als vertragsgemäß akzeptiert.</div></div>
+    </div>
+
+    <div class="warn">
+      <div class="warn-t">⛔ Achtung: Versäumnisse können teuer werden!</div>
+      <p>Ein Unternehmen bestellt Ware für 50.000 €. Die Lieferung ist mangelhaft. Wird die Rüge vergessen, muss das Unternehmen die volle Summe zahlen – ohne Gegenleistung.</p>
+      <p>Im Privatkauf gilt das nicht in gleicher Weise: Verbraucher haben Gewährleistungsrechte ohne kaufmännische Rügepflicht. Im Handelskauf zwischen Firmen gilt dagegen § 377 HGB.</p>
+    </div>
+
+    <div class="block erw-b">
+      <div class="block-t erw-t">🕐 Was muss wann passieren?</div>
+    </div>
+    <div class="tl">
+      <div class="tl-i"><div class="tl-dot">1</div><div class="tl-c"><strong>Bei Lieferung: sofort</strong>Offensichtliche Mängel, z. B. falsche Farbe, falsche Menge oder sichtbare Schäden, noch am selben Tag melden.</div></div>
+      <div class="tl-i"><div class="tl-dot">2</div><div class="tl-c"><strong>Nach Prüfung: unverzüglich</strong>Versteckte Mängel sofort nach Entdeckung rügen – in der Praxis möglichst innerhalb weniger Werktage.</div></div>
+      <div class="tl-i"><div class="tl-dot">3</div><div class="tl-c"><strong>Form: schriftlich</strong>Rüge per Brief oder E-Mail mit genauer Beschreibung des Mangels und Belegnummern.</div></div>
+      <div class="tl-i"><div class="tl-dot">4</div><div class="tl-c"><strong>Forderung: klar formulieren</strong>Gleichzeitig Nachlieferung, Nachbesserung oder einen anderen Rechtsbehelf fordern.</div></div>
+    </div>
+
+    <div class="merk merk-erw">
+      <div class="merk-l">§ 377 HGB – Rechtlicher Grundsatz</div>
+      <p>„Schweigen im Handelskauf gilt als Genehmigung."<br>Wer einen Mangel kennt und ihn nicht meldet, verliert seine Rechte.</p>
+    </div>
+
+    <div class="transfer">
+      <div class="transfer-t">🔄 Transfertraining: Zufällige Fälle beurteilen</div>
+      <div class="transfer-note">Klicke auf „Neuen Fall mischen“. Bearbeite die Fragen zuerst selbst und öffne danach die Lösung über das Drop-down-Menü.</div>
+      <button class="action-btn btn-erw" onclick="newExpertCase()">🔀 Neuen Fall mischen</button>
+      <div id="caseContainer" style="margin-top:1rem;"></div>
+    </div>
+
+    <div class="block erw-b">
+      <div class="block-t erw-t">📖 Rechtliches Glossar</div>
+      <p><span class="pill pill-erw">§ 434 BGB</span> Sachmangel – Ware entspricht nicht der Vereinbarung</p>
+      <p style="margin-top:.6rem"><span class="pill pill-erw">§ 377 HGB</span> Untersuchungs- und Rügepflicht im Handelskauf</p>
+      <p style="margin-top:.6rem"><span class="pill pill-erw">Handelskauf</span> Kauf, bei dem mindestens eine Seite Kaufmann ist</p>
+      <p style="margin-top:.6rem"><span class="pill pill-erw">Gewährleistung</span> Gesetzliche Haftung des Verkäufers für Mängel</p>
+      <p style="margin-top:.6rem"><span class="pill pill-erw">Nacherfüllung § 439 BGB</span> Anspruch auf Nachlieferung oder Nachbesserung</p>
+      <p style="margin-top:.6rem"><span class="pill pill-erw">Genehmigungsfiktion</span> Schweigen wird als Zustimmung gewertet</p>
+    </div>
+  </div>
+  <footer>Experten-Hilfe · § 434 BGB · § 377 HGB · § 439 BGB</footer>
+</div>
+
+<!-- ════════════════════════════════ HILFE ════════════════════════════════ -->
+<div id="p-hilfe" class="page">
+<div class="sticky-nav"><button onclick="show('p-start')">← Startseite</button><span class="nav-label">🗺️ Hilfe</span></div>
+  <div class="hdr hdr-hilfe">
+    <div class="badge">🗺️ Schritt-für-Schritt-Hilfe</div>
+    <h1>So gehst du vor – Schritt für Schritt</h1>
+    <p>Entscheidungsweg, Formulierungscheck und freigeschaltete Formulierungshilfen</p>
+  </div>
+  <div class="wrap">
+
+    <div class="block hilfe-b">
+      <div class="block-t hilfe-t">📋 Schritt-für-Schritt-Anleitung</div>
+      <div class="schritt">
+        <div class="s-num">1</div>
+        <div class="s-c"><div class="s-t">Was wurde bestellt?</div>
+        <div class="s-x">Schau dir <strong>Bestellung</strong> und <strong>Auftragsbestätigung</strong> an. Notiere: Artikel, Menge, Preis, Farbe und Lieferdatum.</div></div>
+      </div>
+      <div class="schritt">
+        <div class="s-num">2</div>
+        <div class="s-c"><div class="s-t">Was wurde geliefert?</div>
+        <div class="s-x">Schau dir <strong>Lieferschein</strong> und <strong>Wareneingangsprotokoll</strong> an. Notiere, was tatsächlich angekommen ist.</div></div>
+      </div>
+      <div class="schritt">
+        <div class="s-num">3</div>
+        <div class="s-c"><div class="s-t">Vergleiche Soll und Ist</div>
+        <div class="s-x">Erstelle eine Tabelle: Soll laut Bestellung gegen Ist laut Lieferung. Wo weicht es ab?</div></div>
+      </div>
+      <div class="schritt">
+        <div class="s-num">4</div>
+        <div class="s-c"><div class="s-t">Gibt es einen Mangel?</div>
+        <div class="s-x">Wenn Soll und Ist nicht übereinstimmen: <strong>Sachmangel nach § 434 BGB</strong>. Bestimme die Art: Falsch-, Minder- oder Schlechtlieferung.</div></div>
+      </div>
+      <div class="schritt">
+        <div class="s-num">5</div>
+        <div class="s-c"><div class="s-t">Rüge schreiben</div>
+        <div class="s-x">Schreibe sofort eine <strong>Mängelrüge</strong> an den Lieferanten. Beschreibe den Mangel genau und fordere Nacherfüllung.</div></div>
+      </div>
+    </div>
+
+    <div class="quiz hilfe-q" id="formCheck">
+      <div class="quiz-title">🔐 Formulierungshilfen freischalten</div>
+      <div class="quiz-intro">Klicke die <strong>drei negativen Beispiele</strong> an. Erst wenn du die schlechten Formulierungen erkennst, werden die Formulierungshilfen sichtbar.</div>
+
+      <div class="select-card" data-negative="true">„Die Lieferung ist irgendwie falsch. Bitte kümmern Sie sich irgendwann darum."</div>
+      <div class="select-card" data-negative="false">„Bei der Überprüfung Ihrer Lieferung vom 15.05.2025 haben wir folgende Mängel festgestellt: falsches Modell, falsche Farbe und Minderlieferung."</div>
+      <div class="select-card" data-negative="true">„Wir behalten die Ware einfach und zahlen deshalb erst einmal gar nichts."</div>
+      <div class="select-card" data-negative="false">„Wir rügen die Lieferung hiermit unverzüglich und bitten um ordnungsgemäße Nachlieferung bis zum 22.05.2025."</div>
+      <div class="select-card" data-negative="true">„Sie haben komplett versagt. So etwas geht gar nicht!"</div>
+
+      <div class="check-actions">
+        <button class="action-btn btn-hilfe" onclick="checkFormExamples()">Auswahl prüfen</button>
+        <button class="action-btn btn-soft" onclick="resetFormExamples()">Zurücksetzen</button>
+      </div>
+      <div class="result-box" id="formResult"></div>
+    </div>
+
+    <div class="locked-section" id="formHelp">
+      <div class="block hilfe-b">
+        <div class="block-t hilfe-t">✍️ Formulierungshilfen für die Mängelrüge</div>
+        <div class="formu"><strong>Einleitung:</strong>„Bei der heutigen Überprüfung Ihrer Lieferung vom [Datum] haben wir folgende Mängel festgestellt:"</div>
+        <div class="formu"><strong>Falsche Ware benennen:</strong>„Sie haben [Artikel X] in [Farbe Y] geliefert. Bestellt hatten wir jedoch [Artikel Z] in [Farbe W]."</div>
+        <div class="formu"><strong>Falsche Menge benennen:</strong>„Wir haben [xx] Stück erhalten. Laut Bestellung hätten es [xx] Stück sein sollen. Es fehlen [xx] Stück."</div>
+        <div class="formu"><strong>Rechtsbezug herstellen:</strong>„Wir rügen diese Lieferung hiermit gemäß § 377 HGB als mangelhaft."</div>
+        <div class="formu"><strong>Nacherfüllung fordern:</strong>„Wir fordern Sie auf, bis zum [Datum] eine ordnungsgemäße Nachlieferung zu erbringen."</div>
+      </div>
+    </div>
+
+    <div class="merk merk-hilfe">
+      <p>🧠 Prüfen → Mangel erkennen → sofort schriftlich rügen!<br>Wer wartet, verliert seine Rechte (§ 377 HGB).</p>
+    </div>
+
+    <div class="block hilfe-b">
+      <div class="block-t hilfe-t">💬 Tipps, wenn du nicht weiterkommst</div>
+      <ul class="lst hilfe-l">
+        <li>Weißt du nicht, ob ein Mangel vorliegt? → Vergleiche Bestellung und Lieferschein <strong>Zeile für Zeile</strong>.</li>
+        <li>Weißt du nicht, was du schreiben sollst? → Schalte oben die Formulierungshilfen frei.</li>
+        <li>Was bedeutet § 434 BGB? → Tippe auf <button class="back-btn-inline" onclick="show('p-basis')">🟢 Basis-Hilfe</button></li>
+        <li>Mehr zu rechtlichen Folgen? → Tippe auf <button class="back-btn-inline" onclick="show('p-erw')">🔵 Experte</button></li>
+      </ul>
+    </div>
+  </div>
+  <footer>Schritt-für-Schritt-Hilfe · § 434 BGB · § 377 HGB</footer>
+</div>
+
+<!-- ════════════════════════════════ LÖSUNG ════════════════════════════════ -->
+<div id="p-loes" class="page">
+<div class="sticky-nav"><button onclick="show('p-start')">← Startseite</button><span class="nav-label">🔐 Lösung</span></div>
+  <div class="hdr hdr-loes">
+    <div class="badge">🔐 Musterlösung</div>
+    <h1>Musterlösung zum Unterrichtsfall</h1>
+    <p>Freischaltung durch Wissensquiz</p>
+  </div>
+  <div class="wrap">
+
+    <div class="lh"><strong>⚠️ Hinweis:</strong> Die Musterlösung ist gesperrt. Beantworte zuerst das Wissensquiz. Bei Fehlern bekommst du direkt angezeigt, ob du eher Basis oder Standard wiederholen solltest.</div>
+
+    <div class="quiz loes-q" id="unlockQuiz">
+      <div class="quiz-title">🔐 Wissensquiz zur Freischaltung</div>
+      <div class="quiz-intro">Beantworte alle 5 Fragen richtig, um die Musterlösung freizuschalten. Du kannst das Quiz wiederholen.</div>
+
+      <div class="q-card" data-q="unlock1" data-repeat="Basis">
+        <div class="q-text">1. Welcher Vergleich hilft zuerst, um eine mangelhafte Lieferung zu erkennen?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="true">Bestellung, Auftragsbestätigung, Lieferschein und Wareneingangsprotokoll vergleichen.</button>
+          <button class="answer-btn" data-correct="false">Nur prüfen, ob eine Rechnung vorliegt.</button>
+          <button class="answer-btn" data-correct="false">Nur den Preis im Internet nachsehen.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="unlock2" data-repeat="Basis">
+        <div class="q-text">2. Was ist bei 48 gelieferten Stühlen statt 50 bestellten Stühlen gegeben?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Schlechtlieferung</button>
+          <button class="answer-btn" data-correct="true">Minderlieferung</button>
+          <button class="answer-btn" data-correct="false">Annahmeverzug</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="unlock3" data-repeat="Standard">
+        <div class="q-text">3. Welche Vorschrift ist für den Sachmangel besonders wichtig?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">§ 433 BGB</button>
+          <button class="answer-btn" data-correct="true">§ 434 BGB</button>
+          <button class="answer-btn" data-correct="false">§ 929 BGB</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="unlock4" data-repeat="Standard">
+        <div class="q-text">4. Welche Vorschrift begründet im Handelskauf die Untersuchungs- und Rügepflicht?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="true">§ 377 HGB</button>
+          <button class="answer-btn" data-correct="false">§ 280 BGB</button>
+          <button class="answer-btn" data-correct="false">§ 105 HGB</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q-card" data-q="unlock5" data-repeat="Standard">
+        <div class="q-text">5. Was muss eine gute Mängelrüge enthalten?</div>
+        <div class="answers">
+          <button class="answer-btn" data-correct="false">Nur den Satz: „Das passt nicht."</button>
+          <button class="answer-btn" data-correct="true">Genaue Mangelbeschreibung, Bezug zur Lieferung und klare Forderung zur Nacherfüllung.</button>
+          <button class="answer-btn" data-correct="false">Nur die Androhung, nie wieder zu bestellen.</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="check-actions">
+        <button class="action-btn btn-loes" onclick="evaluateUnlockQuiz()">Musterlösung freischalten</button>
+        <button class="action-btn btn-soft" onclick="resetQuiz('unlock')">Quiz zurücksetzen</button>
+      </div>
+      <div class="result-box" id="unlockResult"></div>
+    </div>
+
+    <div class="locked-section" id="solutionContent">
+      <div class="game-card show" style="border-color:var(--loes); background:linear-gradient(135deg,#f3eeff,#fffbe7);">
+        <div class="game-icon">🗝️</div>
+        <div class="game-title" style="color:var(--loes-dark);">Musterlösung freigeschaltet</div>
+        <div class="game-text">Du hast gezeigt, dass du die zentralen Begriffe und den Ablauf verstanden hast.</div>
+      </div>
+
+      <div class="ah">Aufgabe 1 – Belegvergleich: Liegt eine mangelhafte Lieferung vor?</div>
+      <div class="lb">
+        <table class="ltbl">
+          <tr><th>Merkmal</th><th>Bestellt / AB</th><th>Geliefert / LS</th><th>Ergebnis</th></tr>
+          <tr><td>Artikel</td><td>ErgoPro 500</td><td>ErgoPro 400</td><td class="bad">❌ Falschlieferung</td></tr>
+          <tr><td>Farbe</td><td>Schwarz</td><td>Grau</td><td class="bad">❌ Falschlieferung</td></tr>
+          <tr><td>Menge</td><td>50 Stück</td><td>48 Stück</td><td class="bad">❌ Minderlieferung</td></tr>
+          <tr><td>Einzelpreis</td><td>80,00 €</td><td>75,00 €</td><td class="bad">❌ Preisabweichung</td></tr>
+          <tr><td>Lieferdatum</td><td>15. Mai</td><td>15. Mai</td><td class="ok">✓ korrekt</td></tr>
+        </table>
+        <div class="richtig"><strong>Ergebnis:</strong> Es liegt eine <strong>mangelhafte Lieferung</strong> mit mehreren Sachmängeln vor: Falschlieferung, Minderlieferung und Preisabweichung.</div>
+      </div>
+
+      <div class="ah">Aufgabe 2 – Sachmangel nach § 434 BGB beschreiben</div>
+      <div class="lb">
+        <p>Ein <strong>Sachmangel nach § 434 BGB</strong> liegt vor, wenn die gelieferte Ware nicht die vereinbarte Beschaffenheit hat.</p>
+        <p>Im Fall hat die Lieferung mehrere Sachmängel: falsches Modell (ErgoPro 400 statt ErgoPro 500), falsche Farbe (grau statt schwarz), falsche Menge (48 statt 50 Stück).</p>
+      </div>
+
+      <div class="ah">Aufgabe 3 – Prüf- und Rügepflicht erklären</div>
+      <div class="lb">
+        <p>Nach <strong>§ 377 HGB</strong> ist die Bürobedarf Schulz GmbH als Kaufmann verpflichtet:</p>
+        <ul>
+          <li><strong>Prüfpflicht:</strong> Die Ware unverzüglich nach Anlieferung auf Menge, Art und Zustand zu prüfen.</li>
+          <li><strong>Rügepflicht:</strong> Erkannte Mängel sofort und schriftlich beim Lieferanten zu melden.</li>
+        </ul>
+        <div class="richtig">Versäumt die Bürobedarf Schulz GmbH die Rüge, gilt die Ware als genehmigt. Sie verliert dann ihre Mängelrechte.</div>
+      </div>
+
+      <div class="ah">Aufgabe 4 – Muster einer Mängelrüge</div>
+      <div class="lb">
+        <div class="muster-ruege">Bürobedarf Schulz GmbH
+Musterstraße 12, 80333 München
+
+An: OfficeLine GmbH, Lieferantenweg 5, 70000 Stuttgart
+
+München, 15. Mai 2025
+
+Betreff: Mängelrüge zu Lieferung vom 15.05.2025
+         Bestell-Nr.: B-2025-047 | Lieferschein-Nr.: LS-8812
+
+Sehr geehrte Damen und Herren,
+
+heute haben wir die oben genannte Lieferung erhalten.
+Bei der Überprüfung haben wir folgende Mängel festgestellt:
+
+1. Falsches Modell: geliefert „ErgoPro 400" (bestellt: „ErgoPro 500")
+2. Falsche Farbe: geliefert Grau (bestellt: Schwarz)
+3. Minderlieferung: 48 Stück erhalten (bestellt: 50 Stück)
+
+Wir rügen diese Lieferung hiermit ausdrücklich als mangelhaft
+gemäß § 377 HGB und fordern Sie auf, bis zum 22. Mai 2025
+eine ordnungsgemäße Nachlieferung (50 Stück, ErgoPro 500,
+Farbe schwarz) zu erbringen.
+
+Die mangelhafte Ware halten wir für Sie zur Rückgabe bereit.
+
+Mit freundlichen Grüßen
+Bürobedarf Schulz GmbH · i.A. Monika Schulz, Einkauf</div>
+      </div>
+
+      <div class="ah">Erweiterung / Experte – Warum ist schnelles Handeln wichtig?</div>
+      <div class="lb">
+        <p>Im kaufmännischen Verkehr gilt § 377 HGB. Wer nicht rechtzeitig rügt, verliert seine Gewährleistungsrechte: keine Nachlieferung, keine Nachbesserung, kein Rücktrittsrecht.</p>
+        <p>Kaufleute müssen schnell handeln, weil sie im Geschäftsverkehr als professionell gelten und weil der Verkäufer zeitnah wissen muss, welche Mängel vorliegen.</p>
+        <div class="richtig"><strong>Fazit:</strong> Schnelles Handeln ist entscheidend. Wer wartet, riskiert, mangelhafte Ware zum vollen Preis behalten zu müssen.</div>
+      </div>
+    </div>
+
+  </div>
+  <footer>Musterlösung · Freischaltung über Wissensquiz · § 434 BGB · § 377 HGB</footer>
+</div>
+
+<!-- ════════════════════════════════ SCRIPT ════════════════════════════════ -->
+<script>
+function show(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if(el){ el.classList.add('active'); }
+  window.scrollTo(0, 0);
+  if(id === 'p-erw' && !window.currentCaseLoaded){ newExpertCase(); window.currentCaseLoaded = true; }
+}
+
+function getQuizRoot(type){
+  if(type === 'basis') return document.getElementById('basisQuiz');
+  if(type === 'std') return document.getElementById('stdQuiz');
+  if(type === 'unlock') return document.getElementById('unlockQuiz');
+  return null;
+}
+
+function setupQuizButtons(){
+  document.querySelectorAll('.quiz .answer-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var card = btn.closest('.q-card');
+      if(!card || card.dataset.answered === 'true') return;
+      var isCorrect = btn.dataset.correct === 'true';
+      card.dataset.answered = 'true';
+      card.dataset.correct = isCorrect ? 'true' : 'false';
+
+      card.querySelectorAll('.answer-btn').forEach(function(b){
+        b.disabled = true;
+        if(b.dataset.correct === 'true') b.classList.add('correct');
+      });
+      if(!isCorrect) btn.classList.add('wrong');
+
+      var feedback = card.querySelector('.feedback');
+      if(isCorrect){
+        feedback.className = 'feedback okay';
+        feedback.innerHTML = '✅ Richtig! Diese Aussage passt.';
+      } else {
+        feedback.className = 'feedback nope';
+        var repeat = card.dataset.repeat ? ' Wiederhole dafür besonders das <strong>' + card.dataset.repeat + '-Level</strong>.' : '';
+        feedback.innerHTML = '❌ Noch nicht richtig. Schau dir die grün markierte Lösung an.' + repeat;
+      }
+    });
+  });
+}
+
+function countQuiz(type){
+  var root = getQuizRoot(type);
+  var cards = root.querySelectorAll('.q-card');
+  var answered = 0;
+  var score = 0;
+  cards.forEach(function(card){
+    if(card.dataset.answered === 'true') answered++;
+    if(card.dataset.correct === 'true') score++;
+  });
+  return {score:score, answered:answered, total:cards.length};
+}
+
+function evaluateQuiz(type){
+  var data = countQuiz(type);
+  var result = document.getElementById(type + 'Result');
+  var game = document.getElementById(type + 'Game');
+  var passScore = type === 'basis' ? 4 : 4;
+  var requiredText = type === 'basis' ? 'mindestens 4 von 5' : '4 von 4';
+  var levelText = type === 'basis' ? 'Basis-Niveau' : 'Standard-Niveau';
+
+  result.classList.add('show');
+  game.classList.remove('show');
+
+  if(data.answered < data.total){
+    result.className = 'result-box show fail';
+    result.innerHTML = '⚠️ Du hast erst <strong>' + data.answered + ' von ' + data.total + '</strong> Fragen beantwortet. Beantworte zuerst alle Fragen.';
+    return;
+  }
+
+  if(data.score >= passScore){
+    result.className = 'result-box show pass';
+    result.innerHTML = '✅ Bestanden! Du hast <strong>' + data.score + ' von ' + data.total + '</strong> Fragen richtig beantwortet. Damit erreichst du das ' + levelText + '.';
+    game.classList.add('show');
+    burstConfetti();
+  } else {
+    result.className = 'result-box show fail';
+    result.innerHTML = '🔁 Du hast <strong>' + data.score + ' von ' + data.total + '</strong> Fragen richtig. Für dieses Level brauchst du ' + requiredText + '. Sieh dir das ' + levelText + ' noch einmal an und versuche den Check erneut.';
+  }
+}
+
+function resetQuiz(type){
+  var root = getQuizRoot(type);
+  if(!root) return;
+  root.querySelectorAll('.q-card').forEach(function(card){
+    delete card.dataset.answered;
+    delete card.dataset.correct;
+    card.querySelectorAll('.answer-btn').forEach(function(btn){
+      btn.disabled = false;
+      btn.classList.remove('correct','wrong');
+    });
+    var fb = card.querySelector('.feedback');
+    if(fb){ fb.className = 'feedback'; fb.innerHTML = ''; }
+  });
+  var result = document.getElementById(type + 'Result');
+  if(result){ result.className = 'result-box'; result.innerHTML = ''; }
+  var game = document.getElementById(type + 'Game');
+  if(game){ game.classList.remove('show'); }
+
+  if(type === 'unlock'){
+    var unlock = document.getElementById('unlockResult');
+    if(unlock){ unlock.className = 'result-box'; unlock.innerHTML = ''; }
+    var solution = document.getElementById('solutionContent');
+    if(solution){ solution.classList.remove('show'); }
+  }
+}
+
+function evaluateUnlockQuiz(){
+  var data = countQuiz('unlock');
+  var result = document.getElementById('unlockResult');
+  var solution = document.getElementById('solutionContent');
+  result.classList.add('show');
+  solution.classList.remove('show');
+
+  if(data.answered < data.total){
+    result.className = 'result-box show fail';
+    result.innerHTML = '⚠️ Du hast erst <strong>' + data.answered + ' von ' + data.total + '</strong> Fragen beantwortet. Beantworte zuerst alle Fragen.';
+    return;
+  }
+
+  if(data.score === data.total){
+    result.className = 'result-box show pass';
+    result.innerHTML = '✅ Freigeschaltet! Du hast <strong>5 von 5</strong> Fragen richtig beantwortet.';
+    solution.classList.add('show');
+    burstConfetti();
+  } else {
+    var wrongLevels = [];
+    document.querySelectorAll('#unlockQuiz .q-card').forEach(function(card){
+      if(card.dataset.correct !== 'true' && card.dataset.repeat){
+        if(wrongLevels.indexOf(card.dataset.repeat) === -1){ wrongLevels.push(card.dataset.repeat); }
+      }
+    });
+    var repeatText = wrongLevels.length ? ' Wiederhole besonders: <strong>' + wrongLevels.join(' und ') + '</strong>.' : '';
+    result.className = 'result-box show fail';
+    result.innerHTML = '🔁 Noch gesperrt. Du hast <strong>' + data.score + ' von 5</strong> richtig. Für die Musterlösung brauchst du 5 von 5.' + repeatText;
+  }
+}
+
+/* Formulierungscheck */
+function setupFormCards(){
+  document.querySelectorAll('#formCheck .select-card').forEach(function(card){
+    card.addEventListener('click', function(){
+      card.classList.toggle('selected');
+    });
+  });
+}
+
+function checkFormExamples(){
+  var cards = document.querySelectorAll('#formCheck .select-card');
+  var selected = document.querySelectorAll('#formCheck .select-card.selected');
+  var correct = true;
+  cards.forEach(function(card){
+    var shouldBeSelected = card.dataset.negative === 'true';
+    var isSelected = card.classList.contains('selected');
+    card.classList.remove('correct','wrong');
+    if(shouldBeSelected && isSelected){ card.classList.add('correct'); }
+    if(!shouldBeSelected && !isSelected){ card.classList.add('correct'); }
+    if(shouldBeSelected !== isSelected){
+      correct = false;
+      card.classList.add('wrong');
+    }
+  });
+
+  var result = document.getElementById('formResult');
+  var help = document.getElementById('formHelp');
+  result.classList.add('show');
+
+  if(selected.length !== 3){
+    result.className = 'result-box show fail';
+    result.innerHTML = '⚠️ Du sollst genau <strong>drei negative Beispiele</strong> anklicken. Prüfe deine Auswahl noch einmal.';
+    help.classList.remove('show');
+    return;
+  }
+
+  if(correct){
+    result.className = 'result-box show pass';
+    result.innerHTML = '✅ Richtig! Du hast die schlechten Formulierungen erkannt. Die Formulierungshilfen sind jetzt freigeschaltet.';
+    help.classList.add('show');
+    burstConfetti();
+  } else {
+    result.className = 'result-box show fail';
+    result.innerHTML = '🔁 Noch nicht richtig. Eine gute Mängelrüge ist sachlich, genau und enthält eine klare Forderung. Versuche es noch einmal.';
+    help.classList.remove('show');
+  }
+}
+
+function resetFormExamples(){
+  document.querySelectorAll('#formCheck .select-card').forEach(function(card){
+    card.classList.remove('selected','correct','wrong');
+  });
+  var result = document.getElementById('formResult');
+  result.className = 'result-box';
+  result.innerHTML = '';
+  document.getElementById('formHelp').classList.remove('show');
+}
+
+/* Expert-Fälle */
+var expertCases = [
+  {
+    title:'Fall 1: Bäckerei Meier OHG',
+    text:'Die Bäckerei Meier OHG bestellt am 03. Juni 500 kg Weizenmehl Type 550. Am 10. Juni wird geliefert – aber 500 kg Roggenmehl Type 1150. Die Einkäuferin bemerkt dies erst am 15. Juni beim Öffnen der Säcke.',
+    qs:[
+      ['Liegt ein Sachmangel vor?', 'Ja. Es liegt ein Sachmangel nach § 434 BGB vor, weil Roggenmehl Type 1150 geliefert wurde, obwohl Weizenmehl Type 550 vereinbart war. Das ist eine Falschlieferung.'],
+      ['Wurde die Rügepflicht verletzt?', 'Wahrscheinlich ja, wenn der Mangel bei ordnungsgemäßer Wareneingangskontrolle erkennbar gewesen wäre. Bei einer anderen Mehlsorte hätte die Bäckerei die Ware unverzüglich nach Lieferung prüfen und rügen müssen.'],
+      ['Welche Folge droht?', 'Wenn nicht rechtzeitig gerügt wurde, kann die Ware nach § 377 HGB als genehmigt gelten. Dann verliert die Bäckerei ihre Mängelrechte.'],
+      ['Mögliche Rügeformulierung?', '„Bei der Prüfung Ihrer Lieferung vom 10.06. haben wir festgestellt, dass statt 500 kg Weizenmehl Type 550 500 kg Roggenmehl Type 1150 geliefert wurden. Wir rügen dies unverzüglich und fordern ordnungsgemäße Nachlieferung.“']
+    ]
+  },
+  {
+    title:'Fall 2: Fitnessstudio AktivPlus GmbH',
+    text:'Die AktivPlus GmbH bestellt 20 Laufbänder Modell RunPro X. Geliefert werden 20 Laufbänder Modell RunPro X, aber bei 6 Geräten funktionieren die Displays nicht. Der Mangel wird beim Auspacken am Liefertag sichtbar.',
+    qs:[
+      ['Liegt ein Sachmangel vor?', 'Ja. Es liegt eine Schlechtlieferung vor, weil 6 Geräte defekt sind. Die Ware entspricht nicht der vereinbarten Qualität bzw. Funktionsfähigkeit.'],
+      ['Was muss die AktivPlus GmbH tun?', 'Sie muss die defekten Geräte unverzüglich dokumentieren und den Mangel sofort gegenüber dem Lieferanten rügen.'],
+      ['Welche Forderung passt besonders?', 'Bei defekten Displays passt vor allem Nachbesserung, also Reparatur, oder ersatzweise Nachlieferung mangelfreier Geräte.'],
+      ['Was wäre eine gute Rügeformulierung?', '„Bei 6 der gelieferten Laufbänder RunPro X funktionieren die Displays nicht. Wir rügen diesen Mangel unverzüglich und fordern Nachbesserung bzw. mangelfreie Ersatzlieferung bis zum …“']
+    ]
+  },
+  {
+    title:'Fall 3: EventLight GmbH',
+    text:'Die EventLight GmbH bestellt 80 schwarze LED-Spots für eine Veranstaltung. Geliefert werden 80 silberne LED-Spots. Die Mitarbeiterin erkennt die falsche Farbe direkt beim Wareneingang, legt die Ware aber ins Lager und meldet sich erst zehn Tage später.',
+    qs:[
+      ['Liegt ein Sachmangel vor?', 'Ja. Es liegt eine Falschlieferung vor, weil schwarze LED-Spots vereinbart waren, aber silberne geliefert wurden.'],
+      ['Ist die spätere Rüge problematisch?', 'Ja. Die falsche Farbe war sofort erkennbar. Eine Meldung erst zehn Tage später ist bei einem offenen Mangel regelmäßig verspätet.'],
+      ['Welche Rechtsfolge droht nach § 377 HGB?', 'Die Ware kann als genehmigt gelten. EventLight kann dadurch Mängelrechte wie Nachlieferung, Rücktritt oder Minderung verlieren.'],
+      ['Welche Formulierung wäre rechtzeitig richtig gewesen?', '„Bei der heutigen Wareneingangskontrolle haben wir festgestellt, dass statt schwarzer LED-Spots silberne LED-Spots geliefert wurden. Wir rügen den Mangel unverzüglich und fordern Nachlieferung der bestellten schwarzen LED-Spots.“']
+    ]
+  },
+  {
+    title:'Fall 4: Chiemgauer Sportmoden GmbH',
+    text:'Die Chiemgauer Sportmoden GmbH bestellt 300 blaue Softshelljacken in Größe M. Geliefert werden 300 blaue Softshelljacken in Größe L. Der Lieferschein nennt Größe L, die Bestellung Größe M.',
+    qs:[
+      ['Liegt ein Sachmangel vor?', 'Ja. Es liegt eine Falschlieferung vor, weil die falsche Größe geliefert wurde. Die Ware entspricht nicht der vereinbarten Beschaffenheit.'],
+      ['Welche Belege müssen verglichen werden?', 'Vor allem Bestellung bzw. Auftragsbestätigung mit dem Lieferschein und der tatsächlich gelieferten Ware. Hier zeigt der Vergleich Größe M gegen Größe L die Abweichung.'],
+      ['Welche Pflicht besteht nach § 377 HGB?', 'Die GmbH muss die Ware unverzüglich untersuchen und den erkennbaren Mangel sofort rügen.'],
+      ['Welche Forderung ist sinnvoll?', 'Sinnvoll ist die ordnungsgemäße Nachlieferung von 300 blauen Softshelljacken in Größe M und die Rücknahme der falsch gelieferten Größe L.']
+    ]
+  }
+];
+
+var lastCaseIndex = -1;
+function newExpertCase(){
+  var idx;
+  if(expertCases.length === 1){ idx = 0; }
+  else {
+    do { idx = Math.floor(Math.random() * expertCases.length); } while(idx === lastCaseIndex);
+  }
+  lastCaseIndex = idx;
+  var c = expertCases[idx];
+  var html = '<div class="transfer-fall"><span class="case-meta">' + c.title + '</span><br><strong>Sachverhalt:</strong> ' + c.text + '</div>';
+  c.qs.forEach(function(item, i){
+    html += '<details class="solution"><summary>' + (i+1) + '. ' + item[0] + ' – Lösung anzeigen</summary><p>' + item[1] + '</p></details>';
+  });
+  document.getElementById('caseContainer').innerHTML = html;
+}
+
+/* Spielerisches Element */
+function burstConfetti(){
+  var box = document.createElement('div');
+  box.className = 'confetti';
+  var symbols = ['🎉','✨','⭐','🏅','✅','📦'];
+  for(var i=0; i<24; i++){
+    var s = document.createElement('span');
+    s.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDelay = (Math.random() * 0.25) + 's';
+    s.style.fontSize = (1 + Math.random() * 1.1) + 'rem';
+    box.appendChild(s);
+  }
+  document.body.appendChild(box);
+  setTimeout(function(){ box.remove(); }, 1800);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  setupQuizButtons();
+  setupFormCards();
+});
+</script>
+
+</body>
+</html>
